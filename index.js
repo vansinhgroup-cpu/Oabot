@@ -4,7 +4,7 @@ const app = express();
 
 app.use(express.json());
 
-const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
+const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
 const ZALO_OA_TOKEN = process.env.ZALO_OA_TOKEN;
 
 app.post('/webhook', async (req, res) => {
@@ -15,28 +15,32 @@ app.post('/webhook', async (req, res) => {
     const userMessage = event.message.text;
     
     try {
-      // Gọi Claude API
-      const claudeResponse = await axios.post(
-        'https://api.anthropic.com/v1/messages',
+      // Gọi DeepSeek API
+      const deepseekResponse = await axios.post(
+        'https://api.deepseek.com/chat/completions',
         {
-          model: 'claude-sonnet-4-6',
+          model: 'deepseek-chat',
           max_tokens: 1000,
-          system: `Bạn là trợ lý tuyển dụng của Vạn Sinh Group. 
-          Nhiệm vụ: tư vấn thông tin việc làm, lương, ca làm việc cho người lao động.
-          Trả lời ngắn gọn, thân thiện, bằng tiếng Việt.
-          Nếu không có thông tin cụ thể, mời khách để lại số điện thoại để được tư vấn trực tiếp.`,
-          messages: [{ role: 'user', content: userMessage }]
+          messages: [
+            {
+              role: 'system',
+              content: `Bạn là trợ lý tuyển dụng của Vạn Sinh Group. 
+              Nhiệm vụ: tư vấn thông tin việc làm, lương, ca làm việc cho người lao động.
+              Trả lời ngắn gọn, thân thiện, bằng tiếng Việt.
+              Nếu không có thông tin cụ thể, mời khách để lại số điện thoại để được tư vấn trực tiếp.`
+            },
+            { role: 'user', content: userMessage }
+          ]
         },
         {
           headers: {
-            'x-api-key': CLAUDE_API_KEY,
-            'anthropic-version': '2023-06-01',
+            'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
             'Content-Type': 'application/json'
           }
         }
       );
       
-      const reply = claudeResponse.data.content[0].text;
+      const reply = deepseekResponse.data.choices[0].message.content;
       
       // Gửi lại Zalo OA
       await axios.post(
