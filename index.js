@@ -3,7 +3,9 @@ const axios = require('axios');
 const app = express();
 
 app.use(express.json());
-
+app.get('/zalo_verifyHuMN3v2o9mHkeevRvDC6K2V_htdBYNKbD3Ov.html', (req, res) => {
+  res.send('<html><head><title>Zalo Verify</title></head><body>HuMN3v2o9mHkeevRvDC6K2V_htdBYNKbD3Ov</body></html>');
+});
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
 const ZALO_OA_TOKEN = process.env.ZALO_OA_TOKEN;
 
